@@ -1,0 +1,162 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+  background-color: #f5f5f5;
+}
+
+/* App Layout */
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 70px; /* Offset for fixed header */
+}
+
+/* Header Styles */
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #333;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.nav a {
+  margin: 0 15px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+/* Home Page Styles */
+.home-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.search-bar {
+  width: 300px;
+  height: 40px;
+  padding: 5px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Login Page Styles */
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+label {
+  margin-top: 10px;
+}
+
+input {
+  height: 30px;
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px;
+  font-size: 16px;
+  color: white;
+  background-color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+a {
+  margin-top: 10px;
+  color: #333;
+  text-decoration: underline;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Sign Up Page Styles */
+.sign-up-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.back-btn {
+  align-self: flex-start;
+  margin-bottom: 10px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.role-selection button {
+  margin: 5px 10px;
+  padding: 8px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Student Dashboard Styles */
+.student-dashboard {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+.profile-info {
+  width: 200px;
+  text-align: center;
+}
+
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.dashboard-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-options button {
+  margin: 5px 0;
+}
