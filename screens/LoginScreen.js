@@ -22,7 +22,7 @@ export default function LoginScreen({ navigation }) {
 
       if (authError) throw authError;
 
-      navigation.navigate('AdminHome');
+      navigation.navigate('AdminDashboard');
       
     } catch (error) {
       console.error('Error:', error);
