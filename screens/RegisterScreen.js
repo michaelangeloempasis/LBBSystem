@@ -1,14 +1,21 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground, Platform } from 'react-native';
+import * as Picker from '@react-native-picker/picker';
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [role, setRole] = useState('student');
 
   const handleRegister = () => {
-    if (!email || !password || !confirmPassword) {
-      alert('Please fill in all fields');
+    if (!firstName || !lastName || !email || !password || !confirmPassword || !address || !phone || !role) {
+      alert('Please fill in all required fields');
       return;
     }
     
@@ -17,10 +24,16 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
     
-    // TODO: Implement actual registration logic
-    console.log('Registering with:', { email, password });
-    // On successful registration, you might want to:
-    // navigation.navigate('Home');
+    console.log('Registering with:', { 
+      firstName, 
+      middleName, 
+      lastName, 
+      email, 
+      password, 
+      address, 
+      phone,
+      role 
+    });
   };
 
   navigation.setOptions({
@@ -36,6 +49,50 @@ export default function RegisterScreen({ navigation }) {
     },
   });
 
+  const RoleSelector = () => {
+    if (Platform.OS === 'web') {
+      return (
+        <View style={styles.pickerContainer}>
+          <Text style={styles.pickerLabel}>Select Role *</Text>
+          <select 
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            style={{
+              backgroundColor: 'rgba(44, 36, 32, 0.7)',
+              borderWidth: 1,
+              borderColor: '#E8976B',
+              padding: 15,
+              borderRadius: 8,
+              fontSize: 16,
+              color: '#E8976B',
+              width: '100%',
+              height: 50,
+              outline: 'none',
+            }}
+          >
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+          </select>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.pickerContainer}>
+        <Text style={styles.pickerLabel}>Select Role *</Text>
+        <Picker
+          selectedValue={role}
+          onValueChange={(itemValue) => setRole(itemValue)}
+          style={styles.picker}
+          dropdownIconColor="#E8976B"
+        >
+          <Picker.Item label="Student" value="student" color="#E8976B" />
+          <Picker.Item label="Admin" value="admin" color="#E8976B" />
+        </Picker>
+      </View>
+    );
+  };
+
   return (
     <ImageBackground 
       source={require('../assets/background.jpg')}
@@ -47,33 +104,100 @@ export default function RegisterScreen({ navigation }) {
           <Text style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>Join us today</Text>
           
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#BF7E5E"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="#BF7E5E"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <TextInput
+                style={styles.input}
+                placeholder="First Name *"
+                placeholderTextColor="#BF7E5E"
+                value={firstName}
+                onChangeText={setFirstName}
+                autoCapitalize="words"
+              />
+            </View>
+            <View style={styles.column}>
+              <TextInput
+                style={styles.input}
+                placeholder="Middle Name (Optional)"
+                placeholderTextColor="#BF7E5E"
+                value={middleName}
+                onChangeText={setMiddleName}
+                autoCapitalize="words"
+              />
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <TextInput
+                style={styles.input}
+                placeholder="Last Name *"
+                placeholderTextColor="#BF7E5E"
+                value={lastName}
+                onChangeText={setLastName}
+                autoCapitalize="words"
+              />
+            </View>
+            <View style={styles.column}>
+              <TextInput
+                style={styles.input}
+                placeholder="Phone Number *"
+                placeholderTextColor="#BF7E5E"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+              />
+            </View>
+          </View>
 
           <TextInput
             style={styles.input}
-            placeholder="Confirm Password"
+            placeholder="Address *"
             placeholderTextColor="#BF7E5E"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
+            value={address}
+            onChangeText={setAddress}
+            multiline
           />
+
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <TextInput
+                style={styles.input}
+                placeholder="Email *"
+                placeholderTextColor="#BF7E5E"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+            <View style={styles.column}>
+              <RoleSelector />
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <TextInput
+                style={styles.input}
+                placeholder="Password *"
+                placeholderTextColor="#BF7E5E"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            </View>
+            <View style={styles.column}>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password *"
+                placeholderTextColor="#BF7E5E"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+              />
+            </View>
+          </View>
           
           <TouchableOpacity 
             style={styles.button} 
@@ -135,6 +259,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
     color: '#E8976B',
+    width: '100%',
   },
   button: {
     backgroundColor: 'rgba(232, 151, 107, 0.9)',
@@ -154,5 +279,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 15,
     fontSize: 14,
+  },
+  pickerContainer: {
+    marginBottom: 15,
+    width: '100%',
+  },
+  pickerLabel: {
+    color: '#BF7E5E',
+    marginBottom: 5,
+    fontSize: 14,
+  },
+  picker: {
+    backgroundColor: 'rgba(44, 36, 32, 0.7)',
+    borderWidth: 1,
+    borderColor: '#E8976B',
+    borderRadius: 8,
+    color: '#E8976B',
+    height: 50,
+  },
+  row: {
+    flexDirection: 'row',
+    marginHorizontal: -7.5,
+  },
+  column: {
+    flex: 1,
+    paddingHorizontal: 7.5,
   },
 }); 
