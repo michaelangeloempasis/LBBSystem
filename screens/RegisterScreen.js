@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground, Platform } from 'react-native';
 import * as Picker from '@react-native-picker/picker';
+import { supabase } from '../lib/supabase';
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -12,8 +13,9 @@ export default function RegisterScreen({ navigation }) {
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [role, setRole] = useState('student');
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!firstName || !lastName || !email || !password || !confirmPassword || !address || !phone || !role) {
       alert('Please fill in all required fields');
       return;
@@ -23,17 +25,42 @@ export default function RegisterScreen({ navigation }) {
       alert('Passwords do not match');
       return;
     }
-    
-    console.log('Registering with:', { 
-      firstName, 
-      middleName, 
-      lastName, 
-      email, 
-      password, 
-      address, 
-      phone,
-      role 
-    });
+
+    try {
+      setLoading(true);
+      
+      // 1. Create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      // 2. Create profile record
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          first_name: firstName,
+          middle_name: middleName,
+          last_name: lastName,
+          email,
+          address,
+          phone,
+          role,
+        });
+
+      if (profileError) throw profileError;
+
+      alert('Registration successful! Please check your email for verification.');
+      navigation.navigate('Login');
+      
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   navigation.setOptions({
@@ -200,10 +227,13 @@ export default function RegisterScreen({ navigation }) {
           </View>
           
           <TouchableOpacity 
-            style={styles.button} 
+            style={[styles.button, loading && styles.buttonDisabled]} 
             onPress={handleRegister}
+            disabled={loading}
           >
-            <Text style={styles.buttonText}>Sign Up</Text>
+            <Text style={styles.buttonText}>
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </Text>
           </TouchableOpacity>
           
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -304,5 +334,8 @@ const styles = StyleSheet.create({
   column: {
     flex: 1,
     paddingHorizontal: 7.5,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
 }); 

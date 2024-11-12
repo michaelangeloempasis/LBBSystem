@@ -1,35 +1,36 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { supabase } from '../lib/supabase';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Add your login logic here
+  const handleLogin = async () => {
     if (!email || !password) {
-      alert('Please fill in all fields');
+      alert('Please enter your email and password');
       return;
     }
-    
-    // TODO: Implement actual login authentication
-    console.log('Logging in with:', { email, password });
-    // On successful login, you might want to:
-    // navigation.navigate('Home');
-  };
 
-  navigation.setOptions({
-    headerStyle: {
-      backgroundColor: '#1A1512',
-    },
-    headerTintColor: '#E8976B',
-    headerTitleStyle: {
-      color: '#E8976B',
-      textShadowColor: '#E8976B',
-      textShadowOffset: { width: 0, height: 0 },
-      textShadowRadius: 4,
-    },
-  });
+    try {
+      setLoading(true);
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      navigation.navigate('AdminHome');
+      
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ImageBackground 
@@ -39,9 +40,9 @@ export default function LoginScreen({ navigation }) {
     >
       <View style={styles.overlay}>
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Login</Text>
-          <Text style={styles.subtitle}>Welcome back</Text>
-          
+          <Text style={styles.title}>Welcome Back</Text>
+          <Text style={styles.subtitle}>Sign in to continue</Text>
+
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -51,7 +52,7 @@ export default function LoginScreen({ navigation }) {
             keyboardType="email-address"
             autoCapitalize="none"
           />
-          
+
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -60,20 +61,19 @@ export default function LoginScreen({ navigation }) {
             onChangeText={setPassword}
             secureTextEntry
           />
-          
+
           <TouchableOpacity 
-            style={styles.button} 
+            style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleLogin}
+            disabled={loading}
           >
-            <Text style={styles.buttonText}>Sign In</Text>
+            <Text style={styles.buttonText}>
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
             <Text style={styles.link}>Don't have an account? Sign up</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity onPress={() => navigation.navigate('Recovery')}>
-            <Text style={styles.link}>Forgot password?</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -90,15 +90,10 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(26, 21, 18, 0.75)',
-    width: '100%',
-    height: '100%',
+    justifyContent: 'center',
   },
   formContainer: {
-    flex: 1,
     padding: 25,
-    justifyContent: 'center',
-    width: '100%',
-    backgroundColor: 'transparent',
   },
   title: {
     fontSize: 32,
@@ -144,5 +139,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 15,
     fontSize: 14,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
 }); 
