@@ -39,7 +39,7 @@ export default function RegisterScreen({ navigation }) {
 
       // 2. Create profile record
       const { error: profileError } = await supabase
-        .from('profiles')
+        .from('admin_users')
         .insert({
           id: authData.user.id,
           first_name: firstName,
