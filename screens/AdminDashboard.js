@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Alert, TextInput, ScrollView, ImageBackground } from 'react-native';
 import { supabase } from '../supabaseClient'; // Import the Supabase client
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import the icon library
 
 export default function AdminDashboard({ navigation }) {
   const [books, setBooks] = useState([]);
@@ -258,7 +259,7 @@ export default function AdminDashboard({ navigation }) {
       style={styles.container}
     >
       <TouchableOpacity style={styles.sidebarToggle} onPress={toggleSidebar}>
-        <Text style={styles.toggleText}>{sidebarVisible ? 'Close' : 'Open'} Sidebar</Text>
+        <Icon name={sidebarVisible ? 'times' : 'bars'} size={24} color="#1A1512" />
       </TouchableOpacity>
 
       <View style={[styles.sidebar, sidebarVisible ? styles.sidebarVisible : styles.sidebarHidden]}>
@@ -302,13 +303,20 @@ const styles = StyleSheet.create({
   },
   sidebar: {
     width: 200,
-    backgroundColor: '#BF7E5E',
+    backgroundColor: 'rgba(191, 126, 94, 0.9)', // Semi-transparent background for the sidebar
     padding: 20,
     position: 'absolute',
     left: 0,
     top: 0,
     height: '100%',
     zIndex: 1,
+    borderRightWidth: 2, // Add a right border
+    borderColor: '#BF7E5E', // Border color
+    borderRadius: 10, // Rounded corners
+    shadowColor: '#000', // Shadow color
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset
+    shadowOpacity: 0.3, // Shadow opacity
+    shadowRadius: 4, // Shadow radius
   },
   sidebarVisible: {
     display: 'flex',
@@ -331,6 +339,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#1A1512',
     marginVertical: 10,
+    padding: 10, // Add padding for better touch area
+    borderRadius: 5, // Rounded corners for items
+    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Slightly transparent background for items
+  },
+  sidebarItemHover: {
+    backgroundColor: '#E8976B', // Change background on hover
   },
   content: {
     flex: 1,
