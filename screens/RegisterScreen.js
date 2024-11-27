@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground, Platform } from 'react-native';
 import * as Picker from '@react-native-picker/picker';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../supabaseClient'; // Import the Supabase client
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -26,38 +26,59 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
+    if (role === 'admin' && !email.endsWith('@admin.com')) {
+      alert('Admin email must end with @admin.com');
+      return;
+    }
+
     try {
       setLoading(true);
       
-      // 1. Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // 1. Create auth user with Supabase
+      const { user, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error('Auth Error:', authError);
+        alert(`Error: ${authError.message}`);
+        return;
+      }
 
-      // 2. Create profile record
+      if (!user) {
+        alert('User creation failed. Please try again.');
+        return;
+      }
+      
+      // 2. Create profile record in the appropriate table
+      const userData = {
+        id: user.id,
+        first_name: firstName,
+        middle_name: middleName,
+        last_name: lastName,
+        email,
+        address,
+        phone,
+        role,
+      };
+
+      const tableName = role === 'admin' ? 'admin_users' : 'student_users';
       const { error: profileError } = await supabase
-        .from('admin_users')
-        .insert({
-          id: authData.user.id,
-          first_name: firstName,
-          middle_name: middleName,
-          last_name: lastName,
-          email,
-          address,
-          phone,
-          role,
-        });
+        .from(tableName)
+        .insert([userData]);
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        alert(profileError.message);
+        return;
+      }
 
       alert('Registration successful! Please check your email for verification.');
       navigation.navigate('Login');
       
     } catch (error) {
-      alert(error.message);
+      console.error('Unexpected Error:', error);
+      alert(`Unexpected Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
